@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stario | Celestial Insights</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stario: {
+                            dark: '#0B0C15',
+                            purple: '#1E1B4B',
+                            gold: '#FFD700',
+                            accent: '#A78BFA',
+                            text: '#E2E8F0'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Lato', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B0C15;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+
+        .star-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .star-input:focus {
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+            outline: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0C15; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4338ca; 
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none; }
+            .print-only { display: block; }
+            .glass-panel { border: 1px solid #ccc; color: black; background: white; }
+            h1, h2, h3, p { color: black !important; }
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl flex justify-between items-center py-6 mb-8 no-print">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-star-of-david text-stario-gold text-2xl animate-pulse"></i>
+            <h1 class="text-3xl font-serif text-stario-gold tracking-widest">STARIO</h1>
+        </div>
+        <div class="text-xs uppercase tracking-widest text-stario-accent">The Oracle is Online</div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-container" class="w-full max-w-2xl relative">
+        
+        <!-- PHASE 1: INPUT FORM -->
+        <div id="input-phase" class="glass-panel rounded-xl p-8 shadow-2xl fade-in">
+            <h2 class="text-2xl font-serif text-center mb-2 text-white">Align Your Stars</h2>
+            <p class="text-center text-stario-accent mb-8 text-sm">Enter your details to generate the Stario Starchart. Optional fields may be skipped.</p>
+
+            <form id="astro-form" class="space-y-6">
+                <!-- Name -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stario-gold mb-2">Name (Required)</label>
+                    <input type="text" id="user-name" required class="star-input w-full p-3 rounded-lg" placeholder="Enter your name">
+                </div>
+
+                <!-- Date and Time -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stario-gold mb-2">Date of Birth (Required)</label>
+                        <input type="date" id="birth-date" required class="star-input w-full p-3 rounded-lg text-white">
+                    </div>
+                    <div>
+                        <div class="flex justify-between">
+                            <label class="block text-xs uppercase tracking-wider text-stario-gold mb-2">Time of Birth</label>
+                            <span class="text-xs text-gray-400 cursor-pointer hover:text-white" onclick="clearField('birth-time')">Skip</span>
+                        </div>
+                        <input type="time" id="birth-time" class="star-input w-full p-3 rounded-lg text-white">
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <div class="flex justify-between">
+                        <label class="block text-xs uppercase tracking-wider text-stario-gold mb-2">Place of Birth</label>
+                        <span class="text-xs text-gray-400 cursor-pointer hover:text-white" onclick="clearField('birth-place')">Skip</span>
+                    </div>
+                    <input type="text" id="birth-place" class="star-input w-full p-3 rounded-lg" placeholder="City, Country">
+                </div>
+
+                <!-- Specific Question -->
+                <div>
+                    <div class="flex justify-between">
+                        <label class="block text-xs uppercase tracking-wider text-stario-gold mb-2">Ask the Oracle</label>
+                        <span class="text-xs text-gray-400 cursor-pointer hover:text-white" onclick="clearField('user-question')">Skip</span>
+                    </div>
+                    <textarea id="user-question" rows="3" class="star-input w-full p-3 rounded-lg" placeholder="Is there a specific question weighing on your soul?"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-900 to-purple-900 hover:from-indigo-800 hover:to-purple-800 border border-stario-gold text-stario-gold font-serif font-bold py-4 rounded-lg shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all transform hover:scale-[1.02]">
+                    REVEAL MY DESTINY
+                </button>
+            </form>
+        </div>
+
+        <!-- PHASE 2: PROCESSING (Hidden by default) -->
+        <div id="processing-phase" class="hidden text-center py-20">
+            <div class="relative w-32 h-32 mx-auto mb-8">
+                <div class="absolute inset-0 border-4 border-stario-gold rounded-full border-t-transparent animate-spin"></div>
+                <div class="absolute inset-4 border-4 border-stario-accent rounded-full border-b-transparent animate-spin" style="animation-direction: reverse; animation-duration: 2s;"></div>
+                <i class="fa-solid fa-moon absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl text-white"></i>
+            </div>
+            <h2 class="text-2xl font-serif text-stario-gold animate-pulse">Consulting the Ephemeris...</h2>
+            <p id="loading-text" class="text-stario-accent mt-2">Triangulating planetary positions.</p>
+        </div>
+
+        <!-- PHASE 3: EMAIL GATE (Hidden by default) -->
+        <div id="gate-phase" class="hidden glass-panel rounded-xl p-8 shadow-2xl text-center max-w-md mx-auto">
+            <i class="fa-solid fa-scroll text-5xl text-stario-gold mb-4"></i>
+            <h2 class="text-2xl font-serif text-white mb-2">Your Chart is Ready</h2>
+            <p class="text-gray-300 mb-6">The stars have revealed a complex path for you. Enter your email to receive the full Stario Starchart PDF file.</p>
+            
+            <input type="email" id="user-email" class="star-input w-full p-3 rounded-lg mb-4" placeholder="your@email.com">
+            
+            <button onclick="unlockReport(true)" class="w-full bg-stario-gold text-stario-dark font-bold py-3 rounded-lg mb-3 hover:bg-yellow-400 transition">
+                Send & Reveal Chart
+            </button>
+            
+            <button onclick="unlockReport(false)" class="text-sm text-stario-accent hover:text-white underline">
+                Skip & View Web Report
+            </button>
+        </div>
+
+        <!-- PHASE 4: THE REPORT (Hidden by default) -->
+        <div id="report-phase" class="hidden w-full">
+            
+            <!-- Actions Bar -->
+            <div class="flex justify-end gap-2 mb-4 no-print">
+                <button onclick="window.print()" class="bg-stario-purple border border-stario-gold text-stario-gold px-4 py-2 rounded hover:bg-indigo-900 transition flex items-center gap-2">
+                    <i class="fa-solid fa-save"></i> Save / Print Report
+                </button>
+                <button onclick="shareReport()" class="bg-stario-purple border border-gray-500 text-gray-300 px-4 py-2 rounded hover:bg-indigo-900 transition flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Share
+                </button>
+            </div>
+
+            <!-- Report Content -->
+            <div class="glass-panel p-8 rounded-xl border-t-4 border-t-stario-gold">
+                
+                <!-- Header -->
+                <div class="text-center mb-8 border-b border-gray-700 pb-6">
+                    <h2 class="text-4xl font-serif text-stario-gold mb-2" id="report-name">User Name</h2>
+                    <div class="flex justify-center items-center gap-4 text-stario-accent">
+                        <span id="report-sun" class="uppercase tracking-widest font-bold">SUN SIGN</span>
+                        <span class="text-xs">•</span>
+                        <span id="report-date">Date</span>
+                    </div>
+                </div>
+
+                <!-- The Starchart Graphic -->
+                <div class="flex flex-col md:flex-row gap-8 mb-10">
+                    <div class="w-full md:w-1/2 flex justify-center items-center relative">
+                        <!-- Canvas for dynamic drawing -->
+                        <canvas id="starchart-canvas" width="350" height="350" class="max-w-full"></canvas>
+                        <!-- Overlay Title -->
+                        <div class="absolute bottom-0 text-center w-full">
+                            <p class="text-xs text-stario-gold uppercase tracking-[0.2em] bg-black bg-opacity-50 inline-block px-2">Stario Starchart</p>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-1/2 space-y-4 flex flex-col justify-center">
+                        <div class="bg-white/5 p-4 rounded-lg border-l-2 border-stario-gold">
+                            <h3 class="text-stario-gold font-serif mb-1">Planetary Alignment</h3>
+                            <p id="planetary-summary" class="text-sm text-gray-300 leading-relaxed">
+                                Calculation pending...
+                            </p>
+                        </div>
+                        <div id="question-response-box" class="bg-indigo-900/30 p-4 rounded-lg border-l-2 border-purple-400 hidden">
+                            <h3 class="text-purple-300 font-serif mb-1">The Oracle Answers</h3>
+                            <p id="oracle-answer" class="text-sm text-gray-300 leading-relaxed italic"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Horoscope Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Love -->
+                    <div class="bg-black/20 p-6 rounded-lg hover:bg-black/30 transition border border-transparent hover:border-pink-900">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i class="fa-solid fa-heart text-pink-500"></i>
+                            <h3 class="font-serif text-xl text-pink-200">Love & Relations</h3>
+                        </div>
+                        <p id="report-love" class="text-gray-400 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <!-- Career -->
+                    <div class="bg-black/20 p-6 rounded-lg hover:bg-black/30 transition border border-transparent hover:border-blue-900">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i class="fa-solid fa-briefcase text-blue-400"></i>
+                            <h3 class="font-serif text-xl text-blue-200">Career & Ambition</h3>
+                        </div>
+                        <p id="report-career" class="text-gray-400 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <!-- Health -->
+                    <div class="bg-black/20 p-6 rounded-lg hover:bg-black/30 transition border border-transparent hover:border-green-900">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i class="fa-solid fa-leaf text-green-400"></i>
+                            <h3 class="font-serif text-xl text-green-200">Vitality & Health</h3>
+                        </div>
+                        <p id="report-health" class="text-gray-400 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <!-- Well-being -->
+                    <div class="bg-black/20 p-6 rounded-lg hover:bg-black/30 transition border border-transparent hover:border-yellow-900">
+                        <div class="flex items-center gap-3 mb-3">
+                            <i class="fa-solid fa-sun text-yellow-400"></i>
+                            <h3 class="font-serif text-xl text-yellow-200">Spiritual Well-being</h3>
+                        </div>
+                        <p id="report-wellbeing" class="text-gray-400 text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-10 text-center border-t border-gray-800 pt-6">
+                    <p class="text-xs text-gray-500">Generated by Stario.</p>
+                    <p class="text-xs text-gray-600 mt-1">Disclaimer: For entertainment and spiritual guidance purposes only.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- LOGIC -->
+    <script>
+        // State
+        const appState = {
+            name: '',
+            birthDate: '',
+            birthTime: '',
+            birthPlace: '',
+            question: '',
+            zodiacSign: ''
+        };
+
+        // Zodiac Data Base
+        const zodiacData = {
+            Aries: {
+                element: "Fire",
+                planet: "Mars",
+                love: "Passion is your driving force. Expect a sudden spark in your romantic life, but beware of burning out too quickly. Patience is your ally.",
+                career: "Your leadership skills are highlighted. A bold move now will pay dividends later. Do not fear the unknown path.",
+                health: "High energy levels allow for intense activity, but guard against headaches and stress. Hydration is key.",
+                wellbeing: "Seek balance through physical exertion followed by meditative silence. Your fire needs air to breathe."
+            },
+            Taurus: {
+                element: "Earth",
+                planet: "Venus",
+                love: "Stability appeals to you, but romance requires vulnerability. Open your heart to unexpected gestures.",
+                career: "Slow and steady wins the race. Financial gains are likely through conservative investments.",
+                health: "Watch your throat and neck area. Gentle stretching and vocal exercises will clear energy blocks.",
+                wellbeing: "Connect with nature. A walk in the forest or gardening will ground your spirit effectively."
+            },
+            Gemini: {
+                element: "Air",
+                planet: "Mercury",
+                love: "Communication is vital. A witty conversation could lead to a deep connection. Avoid overthinking.",
+                career: "Networking is your superpower right now. Multitasking works in your favor, but finish what you start.",
+                health: "Nervous energy may cause anxiety. Practice deep breathing and prioritize sleep.",
+                wellbeing: "Journaling your thoughts will help organize the chaos in your mind. Seek intellectual stimulation."
+            },
+            Cancer: {
+                element: "Water",
+                planet: "Moon",
+                love: "Emotional depth is your strength. Don't hide your shell; let someone see your soft side.",
+                career: "Trust your intuition in business matters. A nurturing approach to colleagues builds loyalty.",
+                health: "Digestive health is linked to your emotions. Eat comforting, warm foods.",
+                wellbeing: "Water is your sanctuary. A long bath or a visit to the ocean will cleanse your aura."
+            },
+            Leo: {
+                element: "Fire",
+                planet: "Sun",
+                love: "You shine bright, attracting many. Ensure your partner feels seen, not just illuminated by your light.",
+                career: "Creativity is peaking. Take center stage in presentations. Recognition is coming.",
+                health: "Heart health and posture are important. Stand tall and engage in cardio activities.",
+                wellbeing: "Express yourself through art or drama. Your soul needs an audience or a canvas."
+            },
+            Virgo: {
+                element: "Earth",
+                planet: "Mercury",
+                love: "Perfection isn't necessary for love. Embrace the messy, beautiful reality of connection.",
+                career: "Detail-oriented work is favored. Your analysis will solve a complex problem others missed.",
+                health: "Gut health is sensitive. Stick to whole foods and avoid processed sugars.",
+                wellbeing: "Declutter your physical space to declutter your mind. Order brings you peace."
+            },
+            Libra: {
+                element: "Air",
+                planet: "Venus",
+                love: "Harmony is your goal. Determine if you are compromising too much to keep the peace.",
+                career: "Partnerships are favored. Diplomacy will navigate you through office politics.",
+                health: "Lower back and kidneys need attention. hydration and balance exercises like yoga are best.",
+                wellbeing: "Surround yourself with beauty. A visit to a gallery or buying flowers will uplift you."
+            },
+            Scorpio: {
+                element: "Water",
+                planet: "Pluto",
+                love: "Intensity is your default. Ensure your passion doesn't turn into possessiveness. Trust is key.",
+                career: "Research and investigation yield results. You have the power to transform a failing project.",
+                health: "Reproductive health and regenerative processes are highlighted. Detoxification helps.",
+                wellbeing: "Embrace the shadows. Psychology or mystery novels satisfy your need for depth."
+            },
+            Sagittarius: {
+                element: "Fire",
+                planet: "Jupiter",
+                love: "Adventure calls. Find a partner who wants to explore the world (or the mind) with you.",
+                career: "Teaching, publishing, or travel are favored sectors. Aim your arrow high.",
+                health: "Hips and thighs are vulnerable. stretch often and keep moving.",
+                wellbeing: "Freedom is essential. Take a spontaneous trip or learn a new philosophy."
+            },
+            Capricorn: {
+                element: "Earth",
+                planet: "Saturn",
+                love: "Commitment scares some, but not you. Build a relationship on a solid foundation of respect.",
+                career: "Ambition is your fuel. Hard work is about to be recognized by authority figures.",
+                health: "Bones and teeth need care. Calcium intake and joint care are important.",
+                wellbeing: "Discipline is good, but allow yourself rest. You cannot pour from an empty cup."
+            },
+            Aquarius: {
+                element: "Air",
+                planet: "Uranus",
+                love: "Unconventional relationships suit you. Value friendship within romance above all else.",
+                career: "Innovation is required. Break the rules and propose the radical idea.",
+                health: "Circulation and ankles. Keep moving and avoid sitting for too long.",
+                wellbeing: "Humanitarian efforts feed your soul. Volunteer or advocate for a cause."
+            },
+            Pisces: {
+                element: "Water",
+                planet: "Neptune",
+                love: "Boundaries can be blurry. Ensure you aren't sacrificing your identity for the union.",
+                career: "Artistic pursuits are highly favored. Trust your imagination over logic today.",
+                health: "Feet and immune system. Reflexology or a pedicure would be healing.",
+                wellbeing: "Meditation and dreams are your gateway. Keep a dream journal."
+            }
+        };
+
+        // Helper: Determine Zodiac Sign
+        function getZodiacSign(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+
+            if ((month == 1 && day <= 19) || (month == 12 && day >= 22)) return "Capricorn";
+            if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return "Aquarius";
+            if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) return "Pisces";
+            if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) return "Aries";
+            if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) return "Taurus";
+            if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) return "Gemini";
+            if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) return "Cancer";
+            if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return "Leo";
+            if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return "Virgo";
+            if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) return "Libra";
+            if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) return "Scorpio";
+            if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) return "Sagittarius";
+            return "Aries"; // Fallback
+        }
+
+        // Helper: Clear inputs
+        function clearField(id) {
+            document.getElementById(id).value = '';
+        }
+
+        // 1. Form Submission
+        document.getElementById('astro-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Gather Data
+            appState.name = document.getElementById('user-name').value;
+            appState.birthDate = document.getElementById('birth-date').value;
+            appState.birthTime = document.getElementById('birth-time').value;
+            appState.birthPlace = document.getElementById('birth-place').value;
+            appState.question = document.getElementById('user-question').value;
+            appState.zodiacSign = getZodiacSign(appState.birthDate);
+
+            // Transitions
+            document.getElementById('input-phase').classList.add('hidden');
+            document.getElementById('processing-phase').classList.remove('hidden');
+
+            // Simulate "Calculations"
+            const loadTexts = ["Calculating Ascendant...", "Mapping Lunar Phases...", "Consulting the Oracle...", "Finalizing Starchart..."];
+            let step = 0;
+            const interval = setInterval(() => {
+                if(step < loadTexts.length) {
+                    document.getElementById('loading-text').innerText = loadTexts[step];
+                    step++;
+                } else {
+                    clearInterval(interval);
+                    document.getElementById('processing-phase').classList.add('hidden');
+                    document.getElementById('gate-phase').classList.remove('hidden');
+                    document.getElementById('gate-phase').classList.add('fade-in');
+                }
+            }, 800);
+        });
+
+        // 2. Unlock Report
+        function unlockReport(capturedEmail) {
+            if(capturedEmail) {
+                const email = document.getElementById('user-email').value;
+                if(!email) {
+                    alert("Please enter an email or select Skip.");
+                    return;
+                }
+                // Here you would send data to backend (Mailchimp/Beacons)
+                console.log(`Email captured: ${email}`);
+                alert(`The full celestial PDF has been sent to ${email}. Viewing web version now...`);
+            }
+
+            document.getElementById('gate-phase').classList.add('hidden');
+            document.getElementById('report-phase').classList.remove('hidden');
+            document.getElementById('report-phase').classList.add('fade-in');
+            
+            generateContent();
+            drawStarchart();
+        }
+
+        // 3. Generate Text Content
+        function generateContent() {
+            const data = zodiacData[appState.zodiacSign];
+            
+            document.getElementById('report-name').innerText = appState.name;
+            document.getElementById('report-sun').innerText = `${appState.zodiacSign} SUN`;
+            document.getElementById('report-date').innerText = new Date(appState.birthDate).toLocaleDateString();
+
+            // Readings
+            document.getElementById('report-love').innerText = data.love;
+            document.getElementById('report-career').innerText = data.career;
+            document.getElementById('report-health').innerText = data.health;
+            document.getElementById('report-wellbeing').innerText = data.wellbeing;
+
+            // Summary
+            document.getElementById('planetary-summary').innerText = 
+                `With the Sun in ${appState.zodiacSign} (${data.element} Element), your ruling planet ${data.planet} is exerting strong influence. The celestial chart indicates a time of transformation.`;
+
+            // Oracle Question
+            if(appState.question.trim() !== "") {
+                document.getElementById('question-response-box').classList.remove('hidden');
+                // Simple mystical generator for the question
+                const answers = [
+                    "The stars suggest patience is required before this resolves.",
+                    "The alignment is favorable for a positive outcome.",
+                    "Look inward; the answer lies not in the stars, but in your intuition.",
+                    "Mercury in retrograde clouds this issue. Wait for clarity.",
+                    "The universe shouts a resounding YES."
+                ];
+                const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+                document.getElementById('oracle-answer').innerText = `"${appState.question}" \n\nOracle: ${randomAnswer}`;
+            }
+        }
+
+        // 4. Draw Canvas Starchart
+        function drawStarchart() {
+            const canvas = document.getElementById('starchart-canvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w/2;
+            const cy = h/2;
+            const r = (w/2) - 20;
+
+            // Clear
+            ctx.clearRect(0,0,w,h);
+
+            // Draw Outer Ring
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = '#FFD700'; // Gold
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw Inner Ring
+            ctx.beginPath();
+            ctx.arc(cx, cy, r - 30, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(167, 139, 250, 0.5)'; // Accent
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Draw Spokes (Houses)
+            for(let i=0; i<12; i++) {
+                const angle = (i * 30) * (Math.PI / 180);
+                const x1 = cx + Math.cos(angle) * (r - 30);
+                const y1 = cy + Math.sin(angle) * (r - 30);
+                const x2 = cx + Math.cos(angle) * r;
+                const y2 = cy + Math.sin(angle) * r;
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = '#FFD700';
+                ctx.stroke();
+            }
+
+            // Draw "Aspects" (Random lines in center to look cool)
+            for(let i=0; i<8; i++) {
+                const angle1 = (Math.random() * 360) * (Math.PI/180);
+                const angle2 = (Math.random() * 360) * (Math.PI/180);
+                const x1 = cx + Math.cos(angle1) * (r - 40);
+                const y1 = cy + Math.sin(angle1) * (r - 40);
+                const x2 = cx + Math.cos(angle2) * (r - 40);
+                const y2 = cy + Math.sin(angle2) * (r - 40);
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = `rgba(167, 139, 250, ${Math.random() * 0.5})`;
+                ctx.stroke();
+            }
+
+            // Place Planets (Random dots)
+            const planetColors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FFFF33'];
+            for(let i=0; i<7; i++) {
+                const angle = (Math.random() * 360) * (Math.PI/180);
+                const dist = (Math.random() * (r - 60)); // Inside the chart
+                const px = cx + Math.cos(angle) * dist;
+                const py = cy + Math.sin(angle) * dist;
+
+                ctx.beginPath();
+                ctx.arc(px, py, 4, 0, Math.PI*2);
+                ctx.fillStyle = planetColors[i % planetColors.length];
+                ctx.fill();
+            }
+
+            // Draw Sign Symbol (Text for now) in Center
+            ctx.font = "20px Cinzel";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(appState.zodiacSign, cx, cy);
+        }
+
+        function shareReport() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Stario Chart',
+                    text: `I just read my celestial forecast on Stario. I am a ${appState.zodiacSign}!`,
+                    url: window.location.href,
+                });
+            } else {
+                alert("Link copied to clipboard (simulated).");
+            }
+        }
+
+    </script>
+</body>
+</html>
