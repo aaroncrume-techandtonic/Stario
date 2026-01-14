@@ -422,8 +422,9 @@
         // Helper: Determine Zodiac Sign
         function getZodiacSign(dateString) {
             const date = new Date(dateString);
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
+            // Use UTC to prevent timezone shifts
+            const day = date.getUTCDate();
+            const month = date.getUTCMonth() + 1;
 
             if ((month == 1 && day <= 19) || (month == 12 && day >= 22)) return "Capricorn";
             if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) return "Aquarius";
@@ -504,7 +505,8 @@
             
             document.getElementById('report-name').innerText = appState.name;
             document.getElementById('report-sun').innerText = `${appState.zodiacSign} SUN`;
-            document.getElementById('report-date').innerText = new Date(appState.birthDate).toLocaleDateString();
+            // Fix: Use timeZone: 'UTC' to prevent the date from shifting back one day
+            document.getElementById('report-date').innerText = new Date(appState.birthDate).toLocaleDateString(undefined, { timeZone: 'UTC' });
 
             // Populate the new General Section
             document.getElementById('report-general').innerText = data.general;
